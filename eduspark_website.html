@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduSpark — Learn Without Limits</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════════
+   ROOT & RESET
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+:root {
+  --ink:      #0d0d0d;
+  --paper:    #f5f0e8;
+  --cream:    #fffcf5;
+  --spark:    #ff5c00;
+  --spark2:   #ffb800;
+  --teal:     #00897b;
+  --teal-lt:  #e0f2f1;
+  --sky:      #1565c0;
+  --sky-lt:   #e3f2fd;
+  --muted:    #6b6457;
+  --border:   #ddd8cc;
+  --card-bg:  #ffffff;
+
+  --f-display: 'Syne', sans-serif;
+  --f-serif:   'Instrument Serif', serif;
+  --f-mono:    'DM Mono', monospace;
+}
+
+body {
+  font-family: var(--f-display);
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* custom cursor */
+.cursor {
+  width: 12px; height: 12px;
+  background: var(--spark);
+  border-radius: 50%;
+  position: fixed; pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--spark);
+  border-radius: 50%;
+  position: fixed; pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.18s ease, width 0.2s, height 0.2s, border-color 0.2s;
+  opacity: 0.6;
+}
+body:hover .cursor { opacity: 1; }
+
+a, button { cursor: none; }
+
+/* ══════════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--spark); border-radius: 10px; }
+
+/* ══════════════════════════════════════════
+   UTILITY
+══════════════════════════════════════════ */
+.container { max-width: 1180px; margin: 0 auto; padding: 0 2rem; }
+.tag {
+  display: inline-block;
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--spark);
+  border: 1px solid var(--spark);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 1.2rem;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+  padding: 0.75rem 1.75rem;
+  border-radius: 50px;
+  border: none;
+  text-decoration: none;
+  transition: transform 0.18s, box-shadow 0.18s;
+  cursor: none;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+.btn-spark { background: var(--spark); color: #fff; }
+.btn-outline { background: transparent; color: var(--ink); border: 2px solid var(--ink); }
+.btn-outline:hover { background: var(--ink); color: var(--paper); }
+.section-title {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  line-height: 1.1;
+  color: var(--ink);
+}
+.section-title strong {
+  font-style: normal;
+  font-family: var(--f-display);
+  font-weight: 800;
+  color: var(--spark);
+}
+
+/* ══════════════════════════════════════════
+   NOISE OVERLAY
+══════════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px;
+}
+
+/* ══════════════════════════════════════════
+   NAV
+══════════════════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(245,240,232,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s;
+}
+.nav-logo {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--ink);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-logo .dot { color: var(--spark); }
+.nav-links {
+  display: flex; align-items: center; gap: 2.5rem;
+  list-style: none;
+}
+.nav-links a {
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.2px;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--spark); }
+.nav-cta { display: flex; gap: 0.75rem; align-items: center; }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  nav { padding: 1rem 1.2rem; }
+}
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  padding: 7rem 2rem 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  max-width: 1180px;
+  margin: 0 auto;
+  position: relative;
+}
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; padding-top: 6rem; }
+  .hero-visual { display: none; }
+}
+
+.hero-eyebrow {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 1.5rem;
+}
+.hero-eyebrow .pulse {
+  width: 8px; height: 8px;
+  border-radius: 50%; background: var(--teal);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.6; }
+}
+.hero-eyebrow span {
+  font-family: var(--f-mono); font-size: 0.75rem;
+  color: var(--teal); letter-spacing: 1px;
+}
+
+.hero h1 {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  line-height: 1.0;
+  letter-spacing: -2px;
+  margin-bottom: 0.3rem;
+}
+.hero h1 .serif {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.hero h1 .underline-spark {
+  position: relative; display: inline-block;
+}
+.hero h1 .underline-spark::after {
+  content: '';
+  position: absolute; left: 0; bottom: 4px; right: 0;
+  height: 6px;
+  background: var(--spark2);
+  z-index: -1;
+  border-radius: 2px;
+}
+
+.hero-sub {
+  font-family: var(--f-display);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--muted);
+  max-width: 440px;
+  line-height: 1.75;
+  margin: 1.5rem 0 2rem;
+}
+
+.hero-actions {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.hero-stats {
+  display: flex; gap: 2rem; flex-wrap: wrap;
+}
+.hero-stat .num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+.hero-stat .num span { color: var(--spark); }
+.hero-stat .label {
+  font-size: 0.75rem;
+  font-family: var(--f-mono);
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+/* Hero visual */
+.hero-visual {
+  position: relative;
+  height: 560px;
+}
+.hero-card {
+  position: absolute;
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+}
+.hc-main {
+  width: 320px; top: 40px; right: 20px;
+  animation: floatA 6s ease-in-out infinite;
+}
+.hc-sub1 {
+  width: 220px; bottom: 80px; left: 0;
+  animation: floatB 7s ease-in-out infinite;
+}
+.hc-sub2 {
+  width: 180px; top: 20px; left: 20px;
+  animation: floatC 8s ease-in-out infinite;
+  background: var(--spark);
+  border-color: var(--spark);
+  color: #fff;
+}
+@keyframes floatA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+@keyframes floatB { 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)} }
+@keyframes floatC { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+.hc-main .course-thumb {
+  width: 100%; height: 140px;
+  background: linear-gradient(135deg, #1565c0, #00897b);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+.hc-main .course-tag {
+  font-family: var(--f-mono); font-size: 0.68rem;
+  color: var(--sky); background: var(--sky-lt);
+  padding: 2px 8px; border-radius: 4px;
+  display: inline-block; margin-bottom: 0.5rem;
+}
+.hc-main h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+.hc-main .meta { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
+.progress-bar {
+  height: 5px; background: #eee; border-radius: 3px; overflow: hidden;
+}
+.progress-fill { height: 100%; background: var(--teal); border-radius: 3px; width: 68%; }
+
+.hc-sub1 .rating { font-size: 1.1rem; margin-bottom: 0.25rem; }
+.hc-sub1 h5 { font-size: 0.85rem; font-weight: 700; color: var(--ink); }
+.hc-sub1 p { font-size: 0.72rem; color: var(--muted); }
+
+.hc-sub2 p { font-family: var(--f-mono); font-size: 0.72rem; opacity: 0.8; }
+.hc-sub2 .big { font-size: 1.4rem; font-weight: 800; margin: 0.4rem 0; }
+
+/* ══════════════════════════════════════════
+   MARQUEE STRIP
+══════════════════════════════════════════ */
+.marquee-strip {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1rem 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-inner {
+  display: inline-flex;
+  animation: marquee 28s linear infinite;
+  gap: 3rem;
+}
+.marquee-inner span {
+  font-family: var(--f-mono);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+}
+.marquee-inner span::after { content: '✦'; color: var(--spark); }
+@keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+/* ══════════════════════════════════════════
+   COURSES SECTION
+══════════════════════════════════════════ */
+.courses-section {
+  padding: 6rem 0;
+  background: var(--cream);
+}
+.section-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 3rem;
+  flex-wrap: wrap; gap: 1.5rem;
+}
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+.course-card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.course-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.1);
+}
+.course-card:hover .course-thumb-img { transform: scale(1.05); }
+.cc-thumb {
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+}
+.course-thumb-img {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem;
+  transition: transform 0.4s;
+}
+.cc-body { padding: 1.5rem; }
+.cc-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 0.75rem;
+}
+.cc-category {
+  font-family: var(--f-mono); font-size: 0.68rem;
+  font-weight: 500; letter-spacing: 0.8px;
+  padding: 3px 10px; border-radius: 20px;
+}
+.cc-level { font-size: 0.72rem; color: var(--muted); }
+.cc-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; line-height: 1.3; }
+.cc-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+.cc-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.cc-price { font-weight: 800; font-size: 1.1rem; }
+.cc-price .original {
+  font-size: 0.78rem; font-weight: 400;
+  color: var(--muted); text-decoration: line-through;
+  margin-left: 4px;
+}
+.cc-enroll {
+  font-family: var(--f-display); font-size: 0.8rem; font-weight: 700;
+  color: var(--spark); text-decoration: none;
+  border: 1.5px solid var(--spark); padding: 5px 14px; border-radius: 20px;
+  transition: background 0.2s, color 0.2s;
+}
+.cc-enroll:hover { background: var(--spark); color: #fff; }
+.cc-stars { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.5rem; }
+.cc-stars span { color: #f59e0b; }
+
+/* ══════════════════════════════════════════
+   HOW IT WORKS
+══════════════════════════════════════════ */
+.how-section {
+  padding: 6rem 0;
+  background: var(--paper);
+}
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+.step-card {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  position: relative;
+}
+.step-num {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 5rem;
+  color: var(--border);
+  line-height: 1;
+  margin-bottom: -1rem;
+  display: block;
+}
+.step-icon {
+  width: 60px; height: 60px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.75rem;
+  margin: 0 auto 1.25rem;
+  position: relative;
+}
+.step-card h3 { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; }
+.step-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+.step-connector {
+  position: absolute;
+  top: 4rem;
+  right: -1rem;
+  width: 2rem;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 4px, transparent 4px, transparent 10px);
+}
+.steps-grid > .step-card:last-child .step-connector { display: none; }
+
+/* ══════════════════════════════════════════
+   ABOUT
+══════════════════════════════════════════ */
+.about-section {
+  padding: 6rem 0;
+  background: var(--ink);
+  color: var(--paper);
+  overflow: hidden;
+  position: relative;
+}
+.about-section::before {
+  content: 'LEARN';
+  position: absolute;
+  right: -40px; top: -30px;
+  font-size: 18rem; font-weight: 800;
+  color: rgba(255,255,255,0.03);
+  pointer-events: none;
+  font-family: var(--f-display);
+  letter-spacing: -10px;
+}
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+@media (max-width: 768px) {
+  .about-grid, .hero { grid-template-columns: 1fr; }
+  .about-grid { gap: 2rem; }
+}
+.about-text .section-title { color: var(--paper); }
+.about-text .section-title strong { color: var(--spark2); }
+.about-body {
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  color: rgba(245,240,232,0.65);
+  line-height: 1.85;
+}
+.about-body + .about-body { margin-top: 1rem; }
+.about-features {
+  margin-top: 2rem;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.about-feature {
+  display: flex; gap: 1rem; align-items: flex-start;
+}
+.af-icon {
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+.af-text h4 { font-size: 0.9rem; font-weight: 700; color: var(--paper); margin-bottom: 3px; }
+.af-text p { font-size: 0.8rem; color: rgba(245,240,232,0.55); line-height: 1.6; }
+
+/* about right - large number block */
+.about-visual-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.avb-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+}
+.avb-card:first-child { grid-column: 1 / -1; background: var(--spark); border-color: var(--spark); }
+.avb-num {
+  font-family: var(--f-display);
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--paper);
+}
+.avb-card:not(:first-child) .avb-num { font-size: 2rem; }
+.avb-label {
+  font-size: 0.75rem;
+  font-family: var(--f-mono);
+  color: rgba(245,240,232,0.6);
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.avb-card:first-child .avb-label { color: rgba(255,255,255,0.75); }
+
+/* ══════════════════════════════════════════
+   INSTRUCTORS
+══════════════════════════════════════════ */
+.instructors-section {
+  padding: 6rem 0;
+  background: var(--cream);
+}
+.instructors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+.instructor-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.instructor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+}
+.instructor-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem;
+  border: 3px solid var(--border);
+}
+.instructor-name { font-weight: 700; font-size: 1rem; margin-bottom: 3px; }
+.instructor-subject {
+  font-family: var(--f-mono); font-size: 0.7rem;
+  color: var(--spark); letter-spacing: 0.5px; margin-bottom: 0.75rem;
+}
+.instructor-bio { font-size: 0.8rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+.instructor-stats { display: flex; justify-content: center; gap: 1.5rem; }
+.inst-stat .n { font-size: 0.95rem; font-weight: 700; }
+.inst-stat .l { font-size: 0.68rem; font-family: var(--f-mono); color: var(--muted); }
+
+/* ══════════════════════════════════════════
+   TESTIMONIALS
+══════════════════════════════════════════ */
+.testimonials-section {
+  padding: 6rem 0;
+  background: var(--paper);
+  overflow: hidden;
+}
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+.testi-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  position: relative;
+}
+.testi-card::before {
+  content: '\201C';
+  position: absolute; top: 1rem; right: 1.5rem;
+  font-size: 5rem; line-height: 1;
+  color: var(--border);
+  font-family: var(--f-serif);
+  pointer-events: none;
+}
+.testi-stars { color: #f59e0b; font-size: 0.9rem; margin-bottom: 0.75rem; }
+.testi-text {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+}
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.testi-name { font-weight: 700; font-size: 0.88rem; }
+.testi-role { font-size: 0.75rem; color: var(--muted); font-family: var(--f-mono); }
+.testi-card.featured {
+  background: var(--spark);
+  border-color: var(--spark);
+}
+.testi-card.featured .testi-text,
+.testi-card.featured .testi-name { color: #fff; }
+.testi-card.featured .testi-role { color: rgba(255,255,255,0.7); }
+.testi-card.featured::before { color: rgba(255,255,255,0.2); }
+
+/* ══════════════════════════════════════════
+   PRICING
+══════════════════════════════════════════ */
+.pricing-section {
+  padding: 6rem 0;
+  background: var(--cream);
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 3rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.pricing-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 2.5rem;
+  position: relative;
+}
+.pricing-card.popular {
+  background: var(--ink);
+  border-color: var(--ink);
+  transform: scale(1.03);
+}
+.popular-badge {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  background: var(--spark);
+  color: #fff;
+  font-family: var(--f-mono); font-size: 0.68rem;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 14px; border-radius: 20px;
+}
+.plan-name {
+  font-family: var(--f-mono); font-size: 0.75rem;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--muted); margin-bottom: 0.75rem;
+}
+.pricing-card.popular .plan-name { color: rgba(245,240,232,0.5); }
+.plan-price {
+  font-family: var(--f-display);
+  font-size: 3rem; font-weight: 800;
+  line-height: 1; margin-bottom: 0.5rem;
+}
+.pricing-card.popular .plan-price { color: var(--paper); }
+.plan-price sub { font-size: 1rem; font-weight: 400; vertical-align: baseline; }
+.plan-period { font-size: 0.8rem; color: var(--muted); margin-bottom: 2rem; }
+.pricing-card.popular .plan-period { color: rgba(245,240,232,0.5); }
+.plan-features { list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.plan-features li { font-size: 0.88rem; display: flex; gap: 10px; align-items: flex-start; }
+.plan-features li::before { content: '✓'; color: var(--teal); font-weight: 700; flex-shrink: 0; }
+.pricing-card.popular .plan-features li { color: rgba(245,240,232,0.8); }
+.pricing-card.popular .plan-features li::before { color: var(--spark2); }
+
+/* ══════════════════════════════════════════
+   CTA BANNER
+══════════════════════════════════════════ */
+.cta-banner {
+  padding: 6rem 2rem;
+  background: var(--spark);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-banner::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 80% 50%, rgba(255,184,0,0.4) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cta-banner h2 {
+  font-family: var(--f-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  position: relative;
+}
+.cta-banner h2 em { font-family: var(--f-serif); font-style: italic; font-weight: 400; }
+.cta-banner p { color: rgba(255,255,255,0.85); max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.7; }
+.cta-banner .btn-white {
+  background: #fff;
+  color: var(--spark);
+  font-weight: 800;
+}
+.cta-banner .btn-white:hover { background: var(--ink); color: #fff; }
+
+/* ══════════════════════════════════════════
+   CONTACT / NEWSLETTER
+══════════════════════════════════════════ */
+.contact-section {
+  padding: 6rem 0;
+  background: var(--paper);
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+.contact-info h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+.contact-info p { font-size: 0.88rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
+.contact-items { display: flex; flex-direction: column; gap: 1rem; }
+.contact-item {
+  display: flex; gap: 1rem; align-items: center;
+  font-size: 0.88rem; color: var(--muted);
+}
+.contact-icon {
+  width: 40px; height: 40px; flex-shrink: 0;
+  background: var(--teal-lt);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+
+/* Form */
+.contact-form { display: flex; flex-direction: column; gap: 1rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 0.78rem; font-weight: 600; color: var(--muted); letter-spacing: 0.3px; }
+.form-group input, .form-group select, .form-group textarea {
+  font-family: var(--f-display);
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--spark);
+}
+.form-group textarea { resize: vertical; min-height: 100px; }
+.form-submit { align-self: flex-start; }
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 4rem 2rem 2rem;
+}
+.footer-grid {
+  max-width: 1180px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+@media (max-width: 768px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .footer-brand { grid-column: 1 / -1; }
+}
+.footer-logo {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: var(--paper);
+  margin-bottom: 0.75rem;
+}
+.footer-logo .dot { color: var(--spark); }
+.footer-desc { font-size: 0.82rem; color: rgba(245,240,232,0.5); line-height: 1.7; max-width: 260px; margin-bottom: 1.5rem; }
+.footer-social { display: flex; gap: 0.75rem; }
+.social-btn {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; text-decoration: none;
+  transition: background 0.2s;
+  color: var(--paper);
+}
+.social-btn:hover { background: var(--spark); }
+.footer-col h5 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(245,240,232,0.4); margin-bottom: 1rem; font-family: var(--f-mono); }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+.footer-col ul li a { font-size: 0.85rem; color: rgba(245,240,232,0.6); text-decoration: none; transition: color 0.2s; }
+.footer-col ul li a:hover { color: var(--spark); }
+.footer-bottom {
+  max-width: 1180px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 1.5rem;
+  font-size: 0.78rem;
+  color: rgba(245,240,232,0.3);
+  flex-wrap: wrap; gap: 0.5rem;
+}
+.ai-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,92,0,0.15);
+  border: 1px solid rgba(255,92,0,0.3);
+  color: var(--spark);
+  padding: 4px 12px; border-radius: 20px;
+  font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.5px;
+}
+
+/* ══════════════════════════════════════════
+   SCROLL ANIMATIONS
+══════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ══════════════════════════════════════════
+   MOBILE ADJUSTMENTS
+══════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+  .section-header { flex-direction: column; align-items: flex-start; }
+  .pricing-card.popular { transform: none; }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ═══════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════ -->
+<nav>
+  <a href="#" class="nav-logo">EduSpark<span class="dot">.</span></a>
+  <ul class="nav-links">
+    <li><a href="#courses">Courses</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#instructors">Instructors</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="#" class="btn btn-outline" style="padding: 0.55rem 1.25rem; font-size: 0.82rem;">Log In</a>
+    <a href="#" class="btn btn-spark" style="padding: 0.55rem 1.25rem; font-size: 0.82rem;">Start Free</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     HERO
+═══════════════════════════════════════ -->
+<section>
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <div class="pulse"></div>
+        <span>AI-Powered EdTech Platform — Est. 2024</span>
+      </div>
+      <h1>
+        Learn<br/>
+        <span class="serif">without</span><br/>
+        <span class="underline-spark">Limits.</span>
+      </h1>
+      <p class="hero-sub">
+        EduSpark uses AI to personalise your learning journey — matching courses, pace, and mentors to who you are, not who you should be.
+      </p>
+      <div class="hero-actions">
+        <a href="#courses" class="btn btn-spark">Explore Courses →</a>
+        <a href="#about" class="btn btn-outline">How It Works</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="num">48<span>K+</span></div>
+          <div class="label">Active Learners</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">320<span>+</span></div>
+          <div class="label">Expert Courses</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">97<span>%</span></div>
+          <div class="label">Satisfaction Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card hc-sub2">
+        <p>Completion Rate</p>
+        <div class="big">94%</div>
+        <p>↑ vs last month</p>
+      </div>
+      <div class="hero-card hc-main">
+        <div class="course-thumb">🧠</div>
+        <span class="course-tag">AI & MACHINE LEARNING</span>
+        <h4>Neural Networks From Scratch</h4>
+        <p class="meta">By Dr. Ananya Krishnan · 42 lessons</p>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <p style="font-size:0.7rem; margin-top:5px; color:var(--muted);">68% complete</p>
+      </div>
+      <div class="hero-card hc-sub1">
+        <div class="rating">⭐⭐⭐⭐⭐</div>
+        <h5>Just earned a certificate!</h5>
+        <p>Full-Stack Web Development</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     MARQUEE
+═══════════════════════════════════════ -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span>Machine Learning</span>
+    <span>Web Development</span>
+    <span>Data Science</span>
+    <span>UX Design</span>
+    <span>Business Analytics</span>
+    <span>Cybersecurity</span>
+    <span>Cloud Computing</span>
+    <span>Digital Marketing</span>
+    <span>Blockchain</span>
+    <span>Mobile Development</span>
+    <span>Machine Learning</span>
+    <span>Web Development</span>
+    <span>Data Science</span>
+    <span>UX Design</span>
+    <span>Business Analytics</span>
+    <span>Cybersecurity</span>
+    <span>Cloud Computing</span>
+    <span>Digital Marketing</span>
+    <span>Blockchain</span>
+    <span>Mobile Development</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     COURSES
+═══════════════════════════════════════ -->
+<section class="courses-section" id="courses">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="tag">Featured Courses</span>
+        <h2 class="section-title">
+          Skills that <strong>matter</strong><br/>in the real world
+        </h2>
+      </div>
+      <a href="#" class="btn btn-outline">View All Courses →</a>
+    </div>
+
+    <div class="courses-grid">
+      <div class="course-card reveal">
+        <div class="cc-thumb">
+          <div class="course-thumb-img" style="background:linear-gradient(135deg,#1565c0,#00897b);">🤖</div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta">
+            <span class="cc-category" style="background:var(--sky-lt);color:var(--sky)">AI / ML</span>
+            <span class="cc-level">Intermediate</span>
+          </div>
+          <div class="cc-stars"><span>★★★★★</span> 4.9 (2.1k reviews)</div>
+          <div class="cc-title">Deep Learning with PyTorch & Real Projects</div>
+          <div class="cc-desc">Build and train neural networks from scratch. Cover CNNs, RNNs, transformers, and deploy models to production.</div>
+          <div class="cc-footer">
+            <div class="cc-price">₹1,999 <span class="original">₹4,999</span></div>
+            <a href="#" class="cc-enroll">Enroll</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card reveal reveal-delay-1">
+        <div class="cc-thumb">
+          <div class="course-thumb-img" style="background:linear-gradient(135deg,#e65100,#ff8f00);">🎨</div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta">
+            <span class="cc-category" style="background:#fff3e0;color:#e65100">Design</span>
+            <span class="cc-level">Beginner</span>
+          </div>
+          <div class="cc-stars"><span>★★★★★</span> 4.8 (1.6k reviews)</div>
+          <div class="cc-title">UI/UX Design Masterclass: Figma to Production</div>
+          <div class="cc-desc">Learn UX research, wireframing, prototyping, and handoff. Build a complete design system from scratch.</div>
+          <div class="cc-footer">
+            <div class="cc-price">₹1,499 <span class="original">₹3,999</span></div>
+            <a href="#" class="cc-enroll">Enroll</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card reveal reveal-delay-2">
+        <div class="cc-thumb">
+          <div class="course-thumb-img" style="background:linear-gradient(135deg,#4527a0,#7b1fa2);">📊</div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta">
+            <span class="cc-category" style="background:#ede7f6;color:#4527a0">Data</span>
+            <span class="cc-level">Advanced</span>
+          </div>
+          <div class="cc-stars"><span>★★★★★</span> 4.9 (3.2k reviews)</div>
+          <div class="cc-title">Python for Data Science: Analytics & Visualisation</div>
+          <div class="cc-desc">Pandas, NumPy, Matplotlib, Seaborn, and Plotly. Real datasets from finance, health, and social media.</div>
+          <div class="cc-footer">
+            <div class="cc-price">₹2,499 <span class="original">₹5,999</span></div>
+            <a href="#" class="cc-enroll">Enroll</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card reveal reveal-delay-3">
+        <div class="cc-thumb">
+          <div class="course-thumb-img" style="background:linear-gradient(135deg,#00695c,#1b5e20);">🌐</div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta">
+            <span class="cc-category" style="background:var(--teal-lt);color:var(--teal)">Web Dev</span>
+            <span class="cc-level">Beginner</span>
+          </div>
+          <div class="cc-stars"><span>★★★★☆</span> 4.7 (4.5k reviews)</div>
+          <div class="cc-title">Full-Stack Web Dev: React + Node.js + MongoDB</div>
+          <div class="cc-desc">Build and deploy full-stack apps. Authentication, REST APIs, cloud deployment, and portfolio projects.</div>
+          <div class="cc-footer">
+            <div class="cc-price">₹2,299 <span class="original">₹5,499</span></div>
+            <a href="#" class="cc-enroll">Enroll</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card reveal reveal-delay-1">
+        <div class="cc-thumb">
+          <div class="course-thumb-img" style="background:linear-gradient(135deg,#b71c1c,#e53935);">🔐</div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta">
+            <span class="cc-category" style="background:#ffebee;color:#b71c1c">Security</span>
+            <span class="cc-level">Intermediate</span>
+          </div>
+          <div class="cc-stars"><span>★★★★★</span> 4.9 (980 reviews)</div>
+          <div class="cc-title">Ethical Hacking & Cybersecurity Bootcamp</div>
+          <div class="cc-desc">Penetration testing, network security, OWASP Top 10, and real CTF challenges to sharpen your skills.</div>
+          <div class="cc-footer">
+            <div class="cc-price">₹3,499 <span class="original">₹7,999</span></div>
+            <a href="#" class="cc-enroll">Enroll</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card reveal reveal-delay-2">
+        <div class="cc-thumb">
+          <div class="course-thumb-img" style="background:linear-gradient(135deg,#37474f,#546e7a);">☁️</div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta">
+            <span class="cc-category" style="background:#eceff1;color:#37474f">Cloud</span>
+            <span class="cc-level">Intermediate</span>
+          </div>
+          <div class="cc-stars"><span>★★★★★</span> 4.8 (1.2k reviews)</div>
+          <div class="cc-title">AWS & DevOps: CI/CD Pipelines & Kubernetes</div>
+          <div class="cc-desc">Get AWS certified. Learn Docker, Kubernetes, Terraform, Jenkins and deploy microservices at scale.</div>
+          <div class="cc-footer">
+            <div class="cc-price">₹2,999 <span class="original">₹6,999</span></div>
+            <a href="#" class="cc-enroll">Enroll</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     HOW IT WORKS
+═══════════════════════════════════════ -->
+<section class="how-section" id="how">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:0.5rem;">
+      <span class="tag">The Process</span>
+      <h2 class="section-title">Learning <strong>re-imagined</strong></h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <span class="step-num">01</span>
+        <div class="step-icon" style="background:var(--sky-lt);">🎯</div>
+        <h3>Set Your Goal</h3>
+        <p>Tell EduSpark what you want to achieve. Our AI maps a personalised curriculum just for you — no one-size-fits-all.</p>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card reveal reveal-delay-1">
+        <span class="step-num">02</span>
+        <div class="step-icon" style="background:#fff3e0;">📚</div>
+        <h3>Learn at Your Pace</h3>
+        <p>Video lessons, live sessions, and hands-on projects. The platform adapts to your schedule and preferred learning style.</p>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card reveal reveal-delay-2">
+        <span class="step-num">03</span>
+        <div class="step-icon" style="background:var(--teal-lt);">🤝</div>
+        <h3>Get Mentored</h3>
+        <p>Weekly 1-on-1 sessions with industry experts. Real-time code reviews, portfolio feedback, and career guidance.</p>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card reveal reveal-delay-3">
+        <span class="step-num">04</span>
+        <div class="step-icon" style="background:#fce4ec;">🏆</div>
+        <h3>Earn & Grow</h3>
+        <p>Industry-recognised certificates, a polished portfolio, and job placement support to land your dream role.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════ -->
+<section class="about-section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <span class="tag" style="border-color:var(--spark2);color:var(--spark2);">About EduSpark</span>
+        <h2 class="section-title">
+          Built for the <em>curious,</em><br/>
+          the <strong>ambitious.</strong>
+        </h2>
+        <p class="about-body">
+          EduSpark was founded in 2024 by a team of educators and engineers who believed that learning should be as personal as a fingerprint. We combine human expertise with AI to give every learner the experience of having a private tutor.
+        </p>
+        <p class="about-body">
+          From complete beginners exploring tech for the first time to senior engineers upskilling on emerging tools — our platform meets you exactly where you are.
+        </p>
+        <div class="about-features">
+          <div class="about-feature">
+            <div class="af-icon" style="background:rgba(255,92,0,0.15);">🤖</div>
+            <div class="af-text">
+              <h4>AI-Powered Personalisation</h4>
+              <p>Your learning path adapts weekly based on progress, quiz performance, and goals.</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="af-icon" style="background:rgba(0,137,123,0.15);">🌍</div>
+            <div class="af-text">
+              <h4>Learn From Anywhere</h4>
+              <p>Fully async content, mobile app, and downloadable resources — learning on your terms.</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="af-icon" style="background:rgba(255,184,0,0.15);">🎓</div>
+            <div class="af-text">
+              <h4>Industry-Backed Certificates</h4>
+              <p>Certificates vetted by 200+ hiring partners including Google, Infosys, and Zoho.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="about-visual-block reveal reveal-delay-2">
+        <div class="avb-card">
+          <div class="avb-num">48,000+</div>
+          <div class="avb-label">Learners Transformed</div>
+        </div>
+        <div class="avb-card">
+          <div class="avb-num">320+</div>
+          <div class="avb-label">Expert Courses</div>
+        </div>
+        <div class="avb-card">
+          <div class="avb-num">85+</div>
+          <div class="avb-label">Expert Mentors</div>
+        </div>
+        <div class="avb-card">
+          <div class="avb-num">200+</div>
+          <div class="avb-label">Hiring Partners</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     INSTRUCTORS
+═══════════════════════════════════════ -->
+<section class="instructors-section" id="instructors">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:0.5rem;">
+      <span class="tag">The Mentors</span>
+      <h2 class="section-title">Learn from the <strong>best</strong></h2>
+    </div>
+    <div class="instructors-grid">
+      <div class="instructor-card reveal">
+        <div class="instructor-avatar" style="background:var(--sky-lt);">👩‍💻</div>
+        <div class="instructor-name">Dr. Ananya Krishnan</div>
+        <div class="instructor-subject">AI / MACHINE LEARNING</div>
+        <div class="instructor-bio">Former ML Engineer at Google Brain. PhD from IIT Bombay. 8 years in deep learning research and production.</div>
+        <div class="instructor-stats">
+          <div class="inst-stat"><div class="n">12K</div><div class="l">Students</div></div>
+          <div class="inst-stat"><div class="n">4.9★</div><div class="l">Rating</div></div>
+          <div class="inst-stat"><div class="n">8</div><div class="l">Courses</div></div>
+        </div>
+      </div>
+      <div class="instructor-card reveal reveal-delay-1">
+        <div class="instructor-avatar" style="background:#fff3e0;">👨‍🎨</div>
+        <div class="instructor-name">Rohan Malhotra</div>
+        <div class="instructor-subject">UI / UX DESIGN</div>
+        <div class="instructor-bio">Senior Product Designer at Razorpay. Designed products used by 10M+ users across India and SEA.</div>
+        <div class="instructor-stats">
+          <div class="inst-stat"><div class="n">8.4K</div><div class="l">Students</div></div>
+          <div class="inst-stat"><div class="n">4.8★</div><div class="l">Rating</div></div>
+          <div class="inst-stat"><div class="n">5</div><div class="l">Courses</div></div>
+        </div>
+      </div>
+      <div class="instructor-card reveal reveal-delay-2">
+        <div class="instructor-avatar" style="background:#fce4ec;">👩‍🔬</div>
+        <div class="instructor-name">Priya Nair</div>
+        <div class="instructor-subject">DATA SCIENCE</div>
+        <div class="instructor-bio">Data Science Lead at Flipkart. MS in Statistics from ISI Kolkata. Speaker at PyCon India and DataHack.</div>
+        <div class="instructor-stats">
+          <div class="inst-stat"><div class="n">9.7K</div><div class="l">Students</div></div>
+          <div class="inst-stat"><div class="n">4.9★</div><div class="l">Rating</div></div>
+          <div class="inst-stat"><div class="n">6</div><div class="l">Courses</div></div>
+        </div>
+      </div>
+      <div class="instructor-card reveal reveal-delay-3">
+        <div class="instructor-avatar" style="background:var(--teal-lt);">👨‍💼</div>
+        <div class="instructor-name">Arjun Mehta</div>
+        <div class="instructor-subject">WEB DEVELOPMENT</div>
+        <div class="instructor-bio">Full-Stack Engineer & Startup Founder. Built and sold two EdTech tools. Open source contributor with 3K+ GitHub stars.</div>
+        <div class="instructor-stats">
+          <div class="inst-stat"><div class="n">15K</div><div class="l">Students</div></div>
+          <div class="inst-stat"><div class="n">4.7★</div><div class="l">Rating</div></div>
+          <div class="inst-stat"><div class="n">10</div><div class="l">Courses</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     TESTIMONIALS
+═══════════════════════════════════════ -->
+<section class="testimonials-section">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:0.5rem;">
+      <span class="tag">Student Stories</span>
+      <h2 class="section-title">Real results, <strong>real people</strong></h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">EduSpark's ML course gave me the confidence to switch careers. Within 4 months I landed a junior ML role at a fintech startup — 40% salary jump.</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:var(--sky-lt);">🧑</div>
+          <div>
+            <div class="testi-name">Karan Singh</div>
+            <div class="testi-role">ML Engineer · Bangalore</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card featured reveal reveal-delay-1">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">The mentorship model is what sets EduSpark apart. My mentor reviewed my code every week and helped me build a portfolio that actually got me interviews.</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:rgba(255,255,255,0.2);">👩</div>
+          <div>
+            <div class="testi-name">Sneha Iyer</div>
+            <div class="testi-role">Frontend Dev · Mumbai</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-2">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">I tried 3 other platforms before EduSpark. The difference is the AI personalisation — it actually adjusts when you're struggling instead of just pushing you forward.</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:var(--teal-lt);">🧑</div>
+          <div>
+            <div class="testi-name">Aditya Rao</div>
+            <div class="testi-role">Data Analyst · Hyderabad</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     PRICING
+═══════════════════════════════════════ -->
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:0.5rem;">
+      <span class="tag">Pricing</span>
+      <h2 class="section-title">Invest in <strong>yourself</strong></h2>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.5rem;">All plans include a 7-day free trial. No credit card required.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card reveal">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">Free</div>
+        <div class="plan-period">Forever free — no credit card</div>
+        <ul class="plan-features">
+          <li>Access to 30+ free courses</li>
+          <li>Community forum & peer learning</li>
+          <li>Progress tracking dashboard</li>
+          <li>Mobile app access</li>
+        </ul>
+        <a href="#" class="btn btn-outline" style="width:100%; justify-content:center;">Get Started Free</a>
+      </div>
+      <div class="pricing-card popular reveal reveal-delay-1">
+        <div class="popular-badge">Most Popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price"><sub>₹</sub>799</div>
+        <div class="plan-period">per month · billed annually (₹9,588/yr)</div>
+        <ul class="plan-features">
+          <li>Unlimited access to 320+ courses</li>
+          <li>AI-personalised learning path</li>
+          <li>Monthly 1-on-1 mentor session</li>
+          <li>Certificate of completion</li>
+          <li>Offline downloads</li>
+          <li>Job placement support</li>
+        </ul>
+        <a href="#" class="btn btn-spark" style="width:100%; justify-content:center;">Start 7-Day Free Trial</a>
+      </div>
+      <div class="pricing-card reveal reveal-delay-2">
+        <div class="plan-name">Teams</div>
+        <div class="plan-price"><sub>₹</sub>599</div>
+        <div class="plan-period">per user/month · min 5 users</div>
+        <ul class="plan-features">
+          <li>Everything in Pro</li>
+          <li>Team dashboard & analytics</li>
+          <li>Dedicated account manager</li>
+          <li>Custom learning paths</li>
+          <li>SSO & SCORM integration</li>
+        </ul>
+        <a href="#contact" class="btn btn-outline" style="width:100%; justify-content:center;">Contact Sales →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     CTA BANNER
+═══════════════════════════════════════ -->
+<div class="cta-banner">
+  <h2>The best time to start<br/><em>was yesterday.</em></h2>
+  <p>Join 48,000+ learners who are building careers they love. Your first 7 days are completely free.</p>
+  <a href="#" class="btn btn-white">Start Learning for Free →</a>
+</div>
+
+<!-- ═══════════════════════════════════════
+     CONTACT
+═══════════════════════════════════════ -->
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="reveal">
+        <span class="tag">Get In Touch</span>
+        <h2 class="section-title" style="font-size:2rem;">Let's talk<br/><strong>learning.</strong></h2>
+        <p class="contact-info" style="margin-top:1rem; color:var(--muted); font-size:0.88rem; line-height:1.7;">
+          Whether you're a student with a question, a corporate looking for team training, or an expert who wants to teach — we'd love to hear from you.
+        </p>
+        <div class="contact-items">
+          <div class="contact-item"><div class="contact-icon">📧</div>hello@eduspark.in</div>
+          <div class="contact-item"><div class="contact-icon">📞</div>+91 98765 43210</div>
+          <div class="contact-item"><div class="contact-icon">📍</div>Koramangala, Bangalore, Karnataka — 560034</div>
+          <div class="contact-item"><div class="contact-icon">🕐</div>Mon–Fri, 9AM–6PM IST</div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="contact-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" placeholder="Rahul"/>
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" placeholder="Sharma"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="rahul@example.com"/>
+          </div>
+          <div class="form-group">
+            <label>I'm interested in</label>
+            <select>
+              <option>Enrolling in a course</option>
+              <option>Corporate / Team Training</option>
+              <option>Teaching on EduSpark</option>
+              <option>Partnership Opportunities</option>
+              <option>General Enquiry</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea placeholder="Tell us more about what you're looking for..."></textarea>
+          </div>
+          <button class="btn btn-spark form-submit" type="button" onclick="this.textContent='Message Sent! ✓'; this.style.background='var(--teal)'; setTimeout(()=>{this.textContent='Send Message →'; this.style.background='var(--spark)'},2500)">Send Message →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">EduSpark<span class="dot">.</span></div>
+      <p class="footer-desc">AI-powered education for the next generation of professionals. Learn smarter, not harder.</p>
+      <div class="footer-social">
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">in</a>
+        <a href="#" class="social-btn">▶</a>
+        <a href="#" class="social-btn">📸</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5>Courses</h5>
+      <ul>
+        <li><a href="#">AI & Machine Learning</a></li>
+        <li><a href="#">Web Development</a></li>
+        <li><a href="#">Data Science</a></li>
+        <li><a href="#">UI/UX Design</a></li>
+        <li><a href="#">Cybersecurity</a></li>
+        <li><a href="#">Cloud & DevOps</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Press Kit</a></li>
+        <li><a href="#">Partnerships</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Support</h5>
+      <ul>
+        <li><a href="#">Help Centre</a></li>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Refund Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 EduSpark Technologies Pvt. Ltd. All rights reserved.</span>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════ -->
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top  = my + 'px';
+});
+
+(function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+document.querySelectorAll('a, button, .course-card, .instructor-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width  = '20px';
+    cursor.style.height = '20px';
+    cursor.style.background = 'var(--spark2)';
+    ring.style.width    = '52px';
+    ring.style.height   = '52px';
+    ring.style.borderColor = 'var(--spark2)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width  = '12px';
+    cursor.style.height = '12px';
+    cursor.style.background = 'var(--spark)';
+    ring.style.width    = '36px';
+    ring.style.height   = '36px';
+    ring.style.borderColor = 'var(--spark)';
+  });
+});
+
+// Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+revealEls.forEach(el => observer.observe(el));
+
+// Nav scroll shadow
+window.addEventListener('scroll', () => {
+  document.querySelector('nav').style.boxShadow =
+    window.scrollY > 20 ? '0 4px 24px rgba(0,0,0,0.08)' : 'none';
+});
+</script>
+</body>
+</html>
